@@ -52,3 +52,10 @@ class User(UserRegistrate):
     user_id: int
     created_at: datetime
     updated_at: datetime
+
+
+# user data for output
+class UserInfo(BaseModel):
+    username: str
+    email: str
+    role: UserRole

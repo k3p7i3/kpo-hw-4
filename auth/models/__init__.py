@@ -1,8 +1,9 @@
 from .user import (
-    UserRole,
-    UserAuth,
-    UserRegistrate,
     User,
+    UserAuth,
+    UserInfo,
+    UserRegistrate,
+    UserRole,
 )
 
 from .session import (
