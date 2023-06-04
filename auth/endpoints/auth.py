@@ -39,6 +39,6 @@ async def auth_user(user: UserAuth):
     status_code=200,
     response_model=UserInfo,
 )
-async def get_user_info(token: str = Header(...)):
+async def get_user_info(x_token: str = Header(...)):
     logic_handler: UserLogic = UserLogic()
-    return await logic_handler.get_user_info_by_token(token)
+    return await logic_handler.get_user_info_by_token(x_token)

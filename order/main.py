@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 import db
-from endpoints import router
+from endpoints import dish_router, menu_router, order_router
 
 
 def bind_events(app):
@@ -15,8 +15,10 @@ def bind_events(app):
 
 
 def get_app():
-    app = FastAPI(title='AuthApp')
-    app.include_router(router, prefix='/api')
+    app = FastAPI(title='OrderApp')
+    app.include_router(order_router)
+    app.include_router(dish_router)
+    app.include_router(menu_router)
     bind_events(app)
     return app
 

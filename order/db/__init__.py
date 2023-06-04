@@ -1,7 +1,12 @@
 import databases
 
-from auth.config import settings
-from .tables import metadata, user_table, session_table
+from order.config import settings
+from .tables import (
+    metadata,
+    dishes_table,
+    orders_table,
+    order_dishes_table,
+)
 
 
 database = databases.Database(settings.database_url)

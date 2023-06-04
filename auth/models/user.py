@@ -56,6 +56,7 @@ class User(UserRegistrate):
 
 # user data for output
 class UserInfo(BaseModel):
+    user_id: int
     username: str
     email: str
     role: UserRole

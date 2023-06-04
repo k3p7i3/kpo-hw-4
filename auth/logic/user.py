@@ -88,6 +88,7 @@ class UserLogic:
             raise HTTPException(status_code=500, detail='User does not exist')
 
         return UserInfo(
+            user_id=user_id,
             username=user.username,
             email=user.email,
             role=user.role,

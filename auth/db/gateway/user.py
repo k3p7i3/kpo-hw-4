@@ -10,7 +10,7 @@ class UserGateway:
     table = user_table
 
     async def create_user(self, user: UserRegistrate) -> int:
-        query: ClauseElement = self.table.insert().values(user.dict())
+        query: ClauseElement = self.table.insert().values(**user.dict())
         user_id: int = await database.execute(query)
         return user_id
 
