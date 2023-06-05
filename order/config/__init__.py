@@ -4,7 +4,7 @@ from pydantic import BaseSettings
 class Settings(BaseSettings):
 
     DB_USER: str = 'postgres'
-    DB_PASSWORD: str = 'password'
+    DB_PASSWORD: str = 2567 #'password'
     DB_HOST: str = 'localhost'
     DB_PORT: str = 5432
     DB_NAME: str = 'order'
@@ -23,7 +23,12 @@ class Settings(BaseSettings):
     def database_url(self):
         return 'postgresql://{user}:{password}@{host}:{port}/{database}'.format(**self.database_config)
 
-    AUTH_URL = 'http://auth:8000'
+    AUTH_DOMAIN = 'auth'
+    AUTH_PORT = 8000
+
+    @property
+    def auth_url(self):
+        return f'http://{self.AUTH_DOMAIN}:{self.AUTH_PORT}'
 
 
 settings = Settings()

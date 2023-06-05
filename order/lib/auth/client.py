@@ -4,10 +4,10 @@ from order.config import settings
 
 
 class AuthClient(BaseClient):
-    domain = settings.AUTH_URL
+    domain = settings.auth_url
 
     async def get_user_info(self, token: str) -> dict:
-        headers = {'X-Token': token}
+        headers = {'x-token': token}
         response = await self._make_request(
             url='/info',
             method=HTTPMethod.get,

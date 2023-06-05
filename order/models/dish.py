@@ -18,5 +18,5 @@ class DishBase(BaseModel):
 
 class Dish(DishBase):
     dish_id: int
-    created_at: datetime = None
-    updated_at: datetime = None
+    created_at: datetime
+    updated_at: datetime

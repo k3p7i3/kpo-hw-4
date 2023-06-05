@@ -35,7 +35,7 @@ class OrderDishGateway(BaseGateway):
         if data:
             return FullOrderDish(**data._mapping)
 
-    async def get_full_order_dishes(self, order_id: int) -> [FullOrderDish]:
+    async def get_full_order_dishes(self, order_id: int) -> list[FullOrderDish]:
         query = (
             select([
                 self.table,
@@ -43,11 +43,8 @@ class OrderDishGateway(BaseGateway):
                 dishes_table.c.description,
             ])
             .select_from(self.table.join(dishes_table))
-            .where(self.table.order_id == order_id)
+            .where(self.table.c.order_id == order_id)
         )
-        data = await database.fetch_one(query)
-        if data:
-            return FullOrderDish(**data._mapping)
 
         rows = await database.fetch_all(query)
         order_dishes = []
@@ -58,9 +55,9 @@ class OrderDishGateway(BaseGateway):
     async def fulfill_order_dishes(
         self,
         order_id: int,
-        order_dishes: [OrderDishCreate],
-    ) -> [OrderDishBase]:
-        base_dishes: [OrderDishBase] = []
+        order_dishes: list[OrderDishCreate],
+    ) -> list[OrderDishBase]:
+        base_dishes: list[OrderDishBase] = []
         for order_dish in order_dishes:
             price = await self.dish_gateway.get_price(order_dish.dish_id)
             order_dish_base: OrderDishBase = OrderDishBase(
@@ -71,7 +68,7 @@ class OrderDishGateway(BaseGateway):
             base_dishes.append(order_dish_base)
         return base_dishes
 
-    async def create_order_dishes(self, order_dishes: [OrderDishBase]):
+    async def create_order_dishes(self, order_dishes: list[OrderDishBase]):
         query = self.table.insert()
         values = [order_dish.dict() for order_dish in order_dishes]
         await database.execute_many(query, values)
@@ -79,7 +76,7 @@ class OrderDishGateway(BaseGateway):
     async def create_dishes_for_order(
         self,
         order_id: int,
-        order_dishes: [OrderDishCreate],
+        order_dishes: list[OrderDishCreate],
     ):
         fulfilled_dishes = await self.fulfill_order_dishes(
             order_id=order_id,

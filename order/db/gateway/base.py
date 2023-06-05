@@ -1,3 +1,5 @@
+import datetime
+
 from abc import ABC
 from pydantic import BaseModel
 from sqlalchemy import Column, Table
@@ -17,12 +19,22 @@ class BaseGateway(ABC):
         object_id: int = await database.execute(query)
         return object_id
 
-    async def _update(self, object_id: int, **fields) -> int | None:
+    async def _update(
+        self,
+        object_id: int,
+        updated_at_flag: bool = True,
+        **fields,
+    ) -> int | None:
+        # postgres haven't 'on_update', so insert 'updated_at' column manually
+        if updated_at_flag:
+            fields['updated_at'] = datetime.datetime.now()
+
         query = (
             self.table
             .update()
             .where(self.prim_key == object_id)
             .values(**fields)
+            .returning(self.prim_key)
         )
         return await database.execute(query)
 

@@ -1,6 +1,7 @@
 import time
 from collections import defaultdict
 from fastapi import HTTPException
+from fastapi.concurrency import run_in_threadpool
 
 from order.db.gateway import DishGateway, OrderGateway
 from order.models import (
@@ -13,15 +14,15 @@ from order.models import (
 )
 
 
-def process_order(order_id: int):
+async def process_order(order_id: int):
     order_gateway: OrderGateway = OrderGateway()
     await order_gateway.update_status(
         order_id=order_id,
         status=OrderStatus.in_process,
     )
-    time.sleep(45)
+    await run_in_threadpool(lambda: time.sleep(45))
     order = await order_gateway.get_order(order_id)
-    if order.status != OrderStatus.in_process:
+    if order.status == OrderStatus.in_process:
         await order_gateway.update_status(
             order_id=order_id,
             status=OrderStatus.executed,
@@ -47,10 +48,10 @@ class OrderHandler:
 
     async def _update_dishes_quantity(self, dishes: dict[int, int]):
         # receive map of [dish_id, order
-        for dish_id, dish_quantity in dishes:
+        for dish_id, dish_quantity in dishes.items():
             await self.dish_gateway.update_quantity(dish_id, dish_quantity)
 
-    async def _check_and_update_dishes(self, dishes: [OrderDishCreate]):
+    async def _check_and_update_dishes(self, dishes: list[OrderDishCreate]):
         #  construct map of [dish_id, dish quantity] to check that the whole order is available
         dish_map = defaultdict(int)
         for dish in dishes:
@@ -58,7 +59,7 @@ class OrderHandler:
 
         error_dishes: list[int] = []
         updated_quantities = {}  # map of [dish_id, new quantity] for later update in db
-        for dish_id, request_quantity in dish_map:
+        for dish_id, request_quantity in dish_map.items():
             db_dish: Dish = await self.dish_gateway.get_dish(dish_id)
             updated_quantities[dish_id] = db_dish.quantity - request_quantity
             if (not db_dish

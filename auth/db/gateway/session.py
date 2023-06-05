@@ -19,5 +19,5 @@ class SessionGateway:
             return Session(**data._mapping)
 
     async def get_session_by_token(self, token: str) -> Session:
-        where_clause: ClauseElement = self.table.c.session_token.is_(token)
+        where_clause: ClauseElement = self.table.c.session_token == token
         return await self._get_session_by_cond(where_clause)

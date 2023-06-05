@@ -7,7 +7,7 @@ from order.models.order_dish import OrderDishCreate, FullOrderDish
 
 class OrderStatus(str, Enum):
     waiting = 'waiting'
-    in_process = 'in process'
+    in_process = 'in_process'
     cancelled = 'cancelled'
     executed = 'executed'
 
@@ -25,7 +25,7 @@ class Order(OrderBase):
 
 
 class OrderCreate(OrderBase):
-    dishes: [OrderDishCreate]
+    dishes: list[OrderDishCreate]
 
     @validator('dishes')
     def dishes_not_empty(cls, v):
@@ -41,4 +41,4 @@ class OrderCreate(OrderBase):
 
 
 class FullOrder(Order):
-    dishes: [FullOrderDish]
+    dishes: list[FullOrderDish]

@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from enum import Enum
 from pydantic import BaseModel, validator
 
@@ -17,10 +17,10 @@ class UserAuth(BaseModel):
 
     @validator('email')
     def validate_email(cls, v):
-        if '@'.count(v) != 1:
+        if v.count('@') != 1:
             raise ValueError('There should be only one @ in email')
 
-        username = v.substr(0, v.find('@') + 1)  # check the part before '@'
+        username = v[0:v.find('@')]  # check the part before '@'
         if len(username) < 1:
             raise ValueError('Username part of email is missing')
 
@@ -29,7 +29,7 @@ class UserAuth(BaseModel):
             if not char.isalnum() and char not in allowed_symbols:
                 raise ValueError('Not allowed symbols in username part of email')
 
-        domain_name = v.substr(v.find('@'))  # check the domain name
+        domain_name = v[v.find('@') + 1:]  # check the domain name
         if len(domain_name) < 1:
             raise ValueError('Domain name is missing')
 
@@ -40,6 +40,8 @@ class UserAuth(BaseModel):
         dot = domain_name.rfind('.')
         if not dot:
             raise ValueError('Domain name is missing')
+
+        return v
 
 
 # user data for registration

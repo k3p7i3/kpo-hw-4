@@ -22,8 +22,8 @@ class UserGateway:
 
     async def get_user_by_auth(self, auth_user: UserAuth) -> User | None:
         where_clause: ClauseElement = and_(
-            self.table.email == auth_user.email,
-            self.table.password_hash == auth_user.password_hash,
+            self.table.c.email == auth_user.email,
+            self.table.c.password_hash == auth_user.password_hash,
         )
         return await self._get_user_by_condition(where_clause)
 
@@ -32,9 +32,9 @@ class UserGateway:
         return await self._get_user_by_condition(where_clause)
 
     async def get_user_by_username(self, username: str) -> User | None:
-        where_clause: ClauseElement = (self.table.c.username.is_(username))
+        where_clause: ClauseElement = (self.table.c.username == username)
         return await self._get_user_by_condition(where_clause)
 
     async def get_user_by_email(self, email: str) -> User | None:
-        where_clause: ClauseElement = (self.table.c.email.is_(email))
+        where_clause: ClauseElement = (self.table.c.email == email)
         return await self._get_user_by_condition(where_clause)

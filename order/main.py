@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-import db
-from endpoints import dish_router, menu_router, order_router
+import order.db as db
+from order.endpoints import dish_router, menu_router, order_router
 
 
 def bind_events(app):

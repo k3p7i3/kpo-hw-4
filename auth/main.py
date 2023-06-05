@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-import db
-from endpoints import router
+import auth.db as db
+from auth.endpoints import router
 
 
 def bind_events(app):
@@ -16,7 +16,7 @@ def bind_events(app):
 
 def get_app():
     app = FastAPI(title='AuthApp')
-    app.include_router(router, prefix='/api')
+    app.include_router(router)
     bind_events(app)
     return app
 

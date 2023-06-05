@@ -2,6 +2,7 @@ import datetime
 import hashlib
 from fastapi import HTTPException
 from jose import jwt, JWTError
+from asyncpg.exceptions import UniqueViolationError
 
 from auth.config import settings
 from auth.db.gateway import UserGateway, SessionGateway
@@ -29,7 +30,7 @@ class UserLogic:
         return user is not None
 
     def _hash_password(self, password: str) -> str:
-        hash_password: str = hashlib.sha512(password).hexdigest()
+        hash_password: str = hashlib.sha512(password.encode()).hexdigest()
         return hash_password
 
     async def _generate_token(self, user_id: int) -> str:
@@ -49,10 +50,9 @@ class UserLogic:
         return encoded_jwt
 
     async def _create_user(self, user: UserRegistrate) -> int:
-        user_id: int = await self.db_users.create_user(user)
-
-        if not user_id:
-            # try to identify error if possible and raise it
+        try:
+            user_id: int = await self.db_users.create_user(user)
+        except UniqueViolationError:
             if await self._does_username_exist(user.username):
                 raise HTTPException(status_code=400, detail='User with this username already exist')
             if await self._does_email_exist(user.email):
@@ -77,7 +77,7 @@ class UserLogic:
         if not session:
             raise HTTPException(status_code=401, detail='Token does not exist')
 
-        if datetime.datetime.utcnow() < session.expires_at:
+        if session.expires_at < datetime.datetime.utcnow():
             raise HTTPException(status_code=401, detail='Token expired')
 
         return session.user_id

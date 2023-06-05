@@ -8,7 +8,7 @@ class DishHandler:
     def __init__(self):
         self.dish_gateway = DishGateway()
 
-    async def get_menu(self) -> [Dish]:
+    async def get_menu(self) -> list[Dish]:
         dishes = await self.dish_gateway.get_available_dishes()
         return dishes
 

@@ -2,6 +2,7 @@ from fastapi import Header, HTTPException
 from order.lib.auth import AuthClient
 from order.logic.order import OrderHandler
 
+
 def _check_token_presence(x_token: str):
     if not x_token:
         raise HTTPException(
@@ -10,15 +11,15 @@ def _check_token_presence(x_token: str):
         )
 
 
-async def is_user(user_id: int, current_user: dict):
+def is_user(user_id: int, current_user: dict):
     return current_user.get('user_id') == user_id
 
 
-async def is_manager(current_user: dict):
+def is_manager(current_user: dict):
     return current_user.get('role') == 'manager'
 
 
-async def is_chef(current_user: dict):
+def is_chef(current_user: dict):
     return current_user.get('role') == 'chef'
 
 

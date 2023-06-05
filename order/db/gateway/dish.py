@@ -1,4 +1,5 @@
-from sqlalchemy.sql import or_
+from sqlalchemy import select
+from sqlalchemy.sql import and_
 
 from order.db import database, dishes_table
 from order.db.gateway.base import BaseGateway
@@ -24,26 +25,27 @@ class DishGateway(BaseGateway):
     async def get_dish(self, dish_id: int) -> Dish | None:
         return await self.get_one(dish_id)
 
-    async def get_available_dishes(self) -> [Dish]:
+    async def get_available_dishes(self) -> list[Dish]:
         query = (
             self.table.select()
             .where(
-                or_(
+                and_(
                     self.table.c.is_available.is_(True),
                     self.table.c.quantity > 0,
                 )
             )
         )
         rows = await database.fetch_all(query)
-        dishes = [self.model(row) for row in rows]
+        dishes = [self.model(**row._mapping) for row in rows]
         return dishes
 
     async def get_price(self, dish_id: int) -> float:
         query = (
-            self.table.select(self.table.c.price)
+            select([self.table.c.price])
             .where(self.prim_key == dish_id)
         )
-        return await database.fetch_val(query)
+        row = await database.fetch_one(query)
+        return row.price
 
     async def update_quantity(self, dish_id: int, quantity: int):
         await self._update(object_id=dish_id, quantity=quantity)

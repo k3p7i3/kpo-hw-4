@@ -12,7 +12,7 @@ router = APIRouter(prefix='/orders', tags=['order'])
 
 
 @router.post(
-    path='create',
+    path='/create',
     status_code=201,
     dependencies=[Depends(only_authorized)],
 )

@@ -20,7 +20,7 @@ router = APIRouter()
 async def registrate_user(user: UserRegistrate):
     logic_handler: UserLogic = UserLogic()
     token = await logic_handler.registrate_user(user)
-    return Token(token=token)
+    return Token(session_token=token)
 
 
 @router.post(
@@ -31,7 +31,7 @@ async def registrate_user(user: UserRegistrate):
 async def auth_user(user: UserAuth):
     logic_handler: UserLogic = UserLogic()
     token = await logic_handler.login_user(user)
-    return Token(token=token)
+    return Token(session_token=token)
 
 
 @router.get(

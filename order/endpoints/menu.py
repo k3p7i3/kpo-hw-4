@@ -9,9 +9,9 @@ router = APIRouter(prefix='/menu', tags=['menu'])
 
 @router.get(
     path='',
-    response_model=[Dish],
+    response_model=list[Dish],
 )
-async def get_menu():
+async def get_menu() -> list[Dish]:
     logic_handler: DishHandler = DishHandler()
-    menu: [Dish] = await logic_handler.get_menu()
+    menu: list[Dish] = await logic_handler.get_menu()
     return menu
